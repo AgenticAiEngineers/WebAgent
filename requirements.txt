@@ -1,0 +1,15 @@
+langgraph
+langchain
+langchain-community
+fastapi
+uvicorn
+chromadb
+sentence-transformers
+duckduckgo-search
+pydantic
+python-dotenv
+requests
+sqlalchemy
+tqdm
+numpy
+scikit-learn
