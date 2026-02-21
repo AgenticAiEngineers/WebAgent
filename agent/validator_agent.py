@@ -1,42 +1,30 @@
-from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-
-load_dotenv()
+from llm.llm_client import LLMClient
 
 
 class ValidatorAgent:
 
     def __init__(self):
-        self.llm = ChatGroq(
-            model_name="llama-3.1-8b-instant",
-            temperature=0.1
-        )
+        self.llm = LLMClient()
 
-        self.system_prompt = """
-You are a validation and quality control agent.
-
-Your job is to review AI-generated content and improve quality.
-
-Rules:
-- Fix grammar and clarity issues.
-- Remove hallucinated or incorrect claims.
-- Ensure professional tone.
-- Preserve original meaning.
-- Output the corrected final version only.
-"""
-
-    def validate_content(self, content: str):
+    def validate(self, answer: str):
 
         prompt = f"""
-SYSTEM:
-{self.system_prompt}
+You are a safety validator.
 
-CONTENT TO VALIDATE:
-{content}
+Check the response below.
 
-Return only the improved final content.
+RULES:
+- If the response is safe and correct → RETURN IT EXACTLY AS IT IS.
+- Only modify if it contains harmful, unsafe, illegal, or dangerous content.
+- Do NOT analyze the answer.
+- Do NOT explain anything.
+- Do NOT add comments.
+- Return ONLY the final answer text.
+
+Response:
+{answer}
 """
 
-        response = self.llm.invoke(prompt)
+        validated_answer = self.llm.generate_response(prompt)
 
-        return response.content
+        return validated_answer.strip()

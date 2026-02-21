@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agent UI</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        background: #f4f6f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .chat-container {
+        width: 420px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      #chatBox {
+        height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+      }
+
+      .message {
+        margin: 6px 0;
+      }
+
+      .user {
+        color: #2563eb;
+        font-weight: bold;
+      }
+      .bot {
+        color: #059669;
+        font-weight: bold;
+      }
+
+      .input-area {
+        display: flex;
+        gap: 10px;
+      }
+
+      input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #1e40af;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="chat-container">
+      <div id="chatBox"></div>
+
+      <form id="chatForm" class="input-area">
+        <input
+          id="userInput"
+          placeholder="Type message..."
+          autocomplete="off"
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <script>
+      const form = document.getElementById("chatForm");
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault(); // ⭐ prevents page refresh
+
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage("You", message, "user");
+        input.value = "";
+
+        addMessage("Agent", "Thinking...", "bot");
+
+        try {
+          const res = await fetch("http://127.0.0.1:8000/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: message }),
+          });
+
+          const data = await res.json();
+
+          removeLastMessage();
+          addMessage("Agent", data.response || "No response", "bot");
+        } catch (err) {
+          removeLastMessage();
+          addMessage("Agent", "Error connecting to server", "bot");
+          console.error(err);
+        }
+      });
+
+      function addMessage(sender, text, type) {
+        const div = document.createElement("div");
+        div.classList.add("message");
+        div.innerHTML = `<span class="${type}">${sender}:</span> ${text}`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      function removeLastMessage() {
+        chatBox.removeChild(chatBox.lastChild);
+      }
+    </script>
+  </body>
+</html>

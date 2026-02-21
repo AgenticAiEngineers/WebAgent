@@ -1,25 +1,30 @@
-from groq import Groq
-from dotenv import load_dotenv
 import os
-load_dotenv()
+from dotenv import load_dotenv
+from google import genai
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ENV_PATH = os.path.join(BASE_DIR, ".env")
+
+load_dotenv(ENV_PATH)
+
 
 class LLMClient:
 
     def __init__(self):
-        self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        api_key = os.getenv("GOOGLE_API_KEY")
 
-    def generate_response(self, prompt: str):
+        if not api_key:
+            raise RuntimeError("GOOGLE_API_KEY not found in .env")
 
-        try:
-            completion = self.client.chat.completions.create(
-                model="qwen/qwen3-32b",
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-            )
+        self.client = genai.Client(api_key=api_key)
 
-            return completion.choices[0].message.content
+    def generate(self, prompt: str):
+        response = self.client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        return response.text
+    def generate_response(self, prompt):
+        return self.generate(prompt)
 
-        except Exception as e:
-            print("LLM ERROR:", e)
-            return "LLM error occurred"
+   

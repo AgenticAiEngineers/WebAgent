@@ -1,28 +1,68 @@
-# Virtual environments
+# -----------------------------
+# Python cache files
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# -----------------------------
+# Virtual environment
+# -----------------------------
 agent_venv/
 venv/
+env/
 
-# Environment variables / secrets
+# -----------------------------
+# Environment variables
+# -----------------------------
 .env
 .env.*
 
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-
-# Databases
-*.sqlite3
-*.db
-
-# Vector databases
-chroma/
-chromadb/
-
+# -----------------------------
 # Logs
+# -----------------------------
 logs/
 *.log
 
+# -----------------------------
+# Database files
+# -----------------------------
+*.db
+*.sqlite3
+
+# -----------------------------
+# Model / vector storage
+# -----------------------------
+chroma_db/
+*.index
+*.bin
+
+# -----------------------------
 # OS files
+# -----------------------------
 .DS_Store
 Thumbs.db
+
+# -----------------------------
+# IDE files
+# -----------------------------
+.vscode/
+.idea/
+
+# -----------------------------
+# Test cache
+# -----------------------------
+.pytest_cache/
+
+# -----------------------------
+# Build files
+# -----------------------------
+dist/
+build/
+*.egg-info/
+
+# -----------------------------
+# Temporary files
+# -----------------------------
+*.tmp
+*.swp

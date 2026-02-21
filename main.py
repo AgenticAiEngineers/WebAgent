@@ -1,34 +1,15 @@
-from agents.planner_agent import PlannerAgent
-from agents.research_agent import ResearchAgent
-from agents.writer_agent import WriterAgent
-from agents.validator_agent import ValidatorAgent
+from agent.agent_core import SimpleAgent
 
-# Initialize agents
-planner = PlannerAgent()
-researcher = ResearchAgent()
-writer = WriterAgent()
-validator = ValidatorAgent()
+agent = SimpleAgent()
 
-# User goal
-goal = "Write a beginner friendly blog about Agentic AI"
+print("\n Smart Agent Ready (type 'exit' to quit)\n")
 
-# Step 1: Planning
-plan = planner.create_plan(goal)
-print("\n--- PLAN ---\n")
-print(plan)
+while True:
+    user = input("You: ")
 
-# Step 2: Research
-research_task = "What is Agentic AI and its core concepts"
-research_data = researcher.research(research_task)
-print("\n--- RESEARCH DATA ---\n")
-print(research_data)
+    if user.lower() == "exit":
+        break
 
-# Step 3: Writing
-draft_content = writer.write_content(plan, research_data)
-print("\n--- DRAFT CONTENT ---\n")
-print(draft_content)
-
-# Step 4: Validation
-final_content = validator.validate_content(draft_content)
-print("\n--- FINAL VALIDATED OUTPUT ---\n")
-print(final_content)
+    response = agent.run(user)
+    print("\nAgent:", response)
+    print("\n" + "="*50 + "\n")

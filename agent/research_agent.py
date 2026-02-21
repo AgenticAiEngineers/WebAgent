@@ -1,4 +1,4 @@
-from langchain_groq import ChatGroq
+from llm.llm_client import LLMClient
 from dotenv import load_dotenv
 from tools.web_tool import web_search
 
@@ -6,10 +6,7 @@ load_dotenv()
 
 class ResearchAgent:
     def __init__(self):
-        self.llm = ChatGroq(
-            model_name="llama-3.1-8b-instant",
-            temperature=0.3
-        )
+        self.llm = LLMClient()
 
         self.system_prompt = (
             "You are a research agent.\n"
@@ -28,7 +25,6 @@ class ResearchAgent:
 
         # Step 2: Summarize using LLM
         prompt = f"""
-SYSTEM:
 {self.system_prompt}
 
 TASK:
@@ -40,6 +36,6 @@ WEB DATA:
 Return summarized research findings.
 """
 
-        response = self.llm.invoke(prompt)
+        response = self.llm.generate(prompt)
 
-        return response.content
+        return response

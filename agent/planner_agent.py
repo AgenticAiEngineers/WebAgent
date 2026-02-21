@@ -1,35 +1,68 @@
-from langchain_groq import ChatGroq
-from dotenv import load_dotenv
+from llm.llm_client import LLMClient
 
-load_dotenv()
 
 class PlannerAgent:
+
     def __init__(self):
-        self.llm = ChatGroq(
-            model_name="llama-3.1-8b-instant",
-            temperature=0.2
-        )
+        self.llm = LLMClient()
 
-        self.system_prompt = (
-            "You are a task planning agent.\n"
-            "Your job is to break a user goal into clear, ordered, actionable steps.\n"
-            "Rules:\n"
-            "- Do not execute tasks.\n"
-            "- Only return a numbered step-by-step plan.\n"
-            "- Keep steps simple and logical."
-        )
-
-    def create_plan(self, user_goal: str):
+    # -----------------------------
+    # SEARCH PLANNER
+    # -----------------------------
+    def create_plan(self, user_query: str):
 
         prompt = f"""
-SYSTEM:
-{self.system_prompt}
+You are a research planner.
 
-USER GOAL:
-{user_goal}
+Break the user request into 1–3 specific search queries.
 
-Return only the plan.
+IMPORTANT:
+If the question asks for latest or current information,
+include words like:
+latest, today, current, headlines, update
+
+User request:
+{user_query}
 """
 
-        response = self.llm.invoke(prompt)
-        return response.content
+
+
+        response = self.llm.generate_response(prompt)
+
+        queries = []
+        for line in response.split("\n"):
+            if line.strip():
+                cleaned = line.split(".", 1)[-1].strip()
+                queries.append(cleaned)
+
+        return queries[:3]
+
+
+    # -----------------------------
+    # TASK PLANNER (MULTI-STEP)
+    # -----------------------------
+    def create_task_plan(self, user_query: str):
+
+        prompt = f"""
+You are an intelligent task planner.
+
+Break the user's request into logical steps needed to solve it.
+
+If the question is simple, return only one step.
+If complex, return multiple steps.
+
+Return ONLY numbered steps.
+
+User request:
+{user_query}
+"""
+
+        response = self.llm.generate_response(prompt)
+
+        steps = []
+        for line in response.split("\n"):
+            if line.strip():
+                cleaned = line.split(".", 1)[-1].strip()
+                steps.append(cleaned)
+
+        return steps
