@@ -90,6 +90,13 @@
       const input = document.getElementById("userInput");
       const chatBox = document.getElementById("chatBox");
 
+      function getApiUrl(path) {
+        if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+          return path;
+        }
+        return `http://127.0.0.1:8000${path}`;
+      }
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault(); // ⭐ prevents page refresh
 
@@ -102,11 +109,15 @@
         addMessage("Agent", "Thinking...", "bot");
 
         try {
-          const res = await fetch("http://127.0.0.1:8000/chat", {
+          const res = await fetch(getApiUrl("/chat"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query: message }),
           });
+
+          if (!res.ok) {
+            throw new Error(`Server returned ${res.status}`);
+          }
 
           const data = await res.json();
 
