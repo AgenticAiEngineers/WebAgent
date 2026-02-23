@@ -1,4 +1,7 @@
-from ddgs import DDGS
+try:
+    from ddgs import DDGS
+except Exception:
+    from duckduckgo_search import DDGS
 
 
 def calculator_tool(expression: str):

@@ -1,9 +1,25 @@
-import chromadb
-from sentence_transformers import SentenceTransformer
+try:
+    import chromadb
+except Exception:
+    chromadb = None
+
+try:
+    from sentence_transformers import SentenceTransformer
+except Exception:
+    SentenceTransformer = None
 
 class VectorMemory:
 
     def __init__(self):
+        self._enabled = chromadb is not None and SentenceTransformer is not None
+
+        if not self._enabled:
+            self.model = None
+            self.client = None
+            self.collection = None
+            self._fallback_docs = []
+            return
+
         # Load embedding model
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -17,6 +33,10 @@ class VectorMemory:
         """
         Convert text to embedding and store in vector DB
         """
+        if not self._enabled:
+            self._fallback_docs.append(text)
+            return
+
         embedding = self.model.encode(text).tolist()
 
         self.collection.add(
@@ -29,6 +49,9 @@ class VectorMemory:
         """
         Search similar memories using semantic similarity
         """
+        if not self._enabled:
+            return self._fallback_docs[-top_k:]
+
         query_embedding = self.model.encode(query).tolist()
 
         results = self.collection.query(

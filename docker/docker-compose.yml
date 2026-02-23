@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend/Dockerfile
+    container_name: webagent-backend
+    ports:
+      - "8711:8711"
+    env_file:
+      - ../.env
+    volumes:
+      - ../memory:/app/memory
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8711
+    container_name: webagent-frontend
+    ports:
+      - "3711:80"
+    depends_on:
+      - backend

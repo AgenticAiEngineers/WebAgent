@@ -1,6 +1,7 @@
 langgraph
 langchain
 langchain-community
+google-genai
 fastapi
 uvicorn
 chromadb

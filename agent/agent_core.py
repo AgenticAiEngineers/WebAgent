@@ -1,4 +1,5 @@
 import re
+import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from agent.reflection_agent import ReflectionAgent
@@ -9,7 +10,10 @@ from llm.llm_client import LLMClient
 from memory.sqlite_memory import save_message, load_history
 from memory.chromadb_memory import VectorMemory
 from agent.planner_agent import PlannerAgent
-from logs.logger import logger
+try:
+    from logs.logger import logger
+except Exception:
+    logger = logging.getLogger("webagent")
 
 
 # =====================================================
